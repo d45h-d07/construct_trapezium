@@ -97,7 +97,7 @@ def main(args):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if len(sys.argv) < 8:
+    if len(args) < 8:
         print("\nIncorrect number of arguments. 8 values expected, all separated by spaces.\n")
         print('Usage:\n    python construct_trapezium.py xA yA xB yB xP1 yP1 xP2 yP2')
         print(__doc__)
