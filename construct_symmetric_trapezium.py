@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """
 Given coordinates for points A and B and a pair of constraining points P1 and P2, this script constructs a trapezium
-ABCD with the specified internal angles ∠A and ∠B.
+ABCD with internal angles ∠A = ∠B = 3*pi/4, and ∠C = ∠D = pi/4, respectively.
 
-Created on Wed Aug 20 19:58:14 2025
+Created on Tue Aug 19 23:50:47 2025
 
 @author: dash-dot
 """
@@ -33,9 +33,6 @@ def main(args):
     yP1 = float(args[5])
     xP2 = float(args[6])
     yP2 = float(args[7])
-    # Specify the angles in a way Python understands
-    angle_A = float(eval(args[8].replace('pi', 'numpy.pi')))
-    angle_B = float(eval(args[9].replace('pi', 'numpy.pi')))
     
     # Define the position vectors rA, rB, rP1 and rP2 for points A, B, P1 and P2, respectively
     rA = numpy.array([xA, yA])
@@ -65,13 +62,12 @@ def main(args):
         d = d2
     # Use the 2-argument arctangent to compute the correct angle in the interval (-pi, pi]
     angle = numpy.arctan2(d[1], d[0])
-    # Slope of segment AC
-    mA = numpy.tan(angle + angle_A - numpy.pi/2)
-    # Slope of segment BD:
-    mB = numpy.tan(angle - angle_B + numpy.pi/2)
+    # Slope when the subtended angle is 3*pi/4
+    mA = (1 + numpy.tan(angle)) / (1 - numpy.tan(angle))
+    # The non-parallel sides of the trapezium are mutually orthogonal, and so:
+    mB = -1 / mA
     if numpy.cross(rAB, d) < 0:
-        # Swap the points and corresponding slopes
-        rA, rB = rB, rA
+        # Swap the slope values
         mA, mB = mB, mA
     mAB = (rB[1] - rA[1]) / (rB[0] - rA[0])
     # Solve for point D, which is adjacent to A
@@ -88,9 +84,8 @@ def main(args):
     rD = rotate_vector(rD, -numpy.exp(1))
     
     print('\nSpecifications:')
-    print(f'Point P1: ({xP1}, {yP1}), point P2: ({xP2}, {yP2})')
     print(f'Point A:  ({xA}, {yA}), point B:  ({xB}, {yB})')
-    print(f'Angle A:  {angle_A}, angle B:  {angle_B}\n')
+    print(f'Point P1: ({xP1}, {yP1}), point P2: ({xP2}, {yP2})\n')
     print(f'Point C is: ({rC[0]}, {rC[1]}).')
     print(f'Point D is: ({rD[0]}, {rD[1]}).')
     plt.plot([xA, xB], [yA, yB], 'ko-', linewidth=2)
@@ -105,9 +100,9 @@ def main(args):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if len(args) < 10:
-        print("\nIncorrect number of arguments. 10 values expected, all separated by spaces.\n")
-        print('Usage:\n    python construct_trapezium.py xA yA xB yB xP1 yP1 xP2 yP2 ∠A ∠B')
+    if len(args) < 8:
+        print("\nIncorrect number of arguments. 8 values expected, all separated by spaces.\n")
+        print('Usage:\n    python construct_symmetric_trapezium.py xA yA xB yB xP1 yP1 xP2 yP2')
         print(__doc__)
         sys.exit()
     else:
